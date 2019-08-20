@@ -36,19 +36,35 @@ func (bp *JavaBuildpack) Id() string {
 }
 
 func (bp *JavaBuildpack) Detect(d detect.Detect, m function.Metadata) (*buildplan.BuildPlan, error) {
-	if detected, err := bp.detect(d, m); err != nil {
-		return nil, err
-	} else if detected {
+	//if detected, err := bp.detect(d, m); err != nil {
+	//	fmt.Println(fmt.Sprintf("failed with: %s", err))
+	//	return nil, err
+	//} else if detected {
 		plan := BuildPlanContribution(d, m)
 		return &plan, nil
-	}
-	// didn't detect
-	return nil, nil
+	//}
+	//// didn't detect
+	//fmt.Println("didn't detect")
+	//return nil, nil
 }
 
 func (*JavaBuildpack) detect(d detect.Detect, m function.Metadata) (bool, error) {
+	fmt.Println(fmt.Sprintf("%#v", d))
+	fmt.Println(fmt.Sprintf("%#v", m))
 	// Try java
-	_, ok := d.BuildPlan[jvmapplication.Dependency]
+	fmt.Println("---------------jvmapplication.Dependency----------------")
+	fmt.Println(jvmapplication.Dependency)
+	fmt.Println("-------------------------------")
+
+	f, ok := d.BuildPlan[jvmapplication.Dependency]
+	fmt.Println("---------------_, ok := d.BuildPlan[jvmapplication.Dependency]----------------")
+	fmt.Println(d.BuildPlan[jvmapplication.Dependency])
+	fmt.Println("-------------------------------")
+	fmt.Println("---------------_, ok := d.BuildPlan[jvmapplication.Dependency] Values----------------")
+	fmt.Println(fmt.Sprintf("%#v", f))
+	fmt.Println(ok)
+	fmt.Println("-------------------------------")
+
 	return ok, nil
 }
 

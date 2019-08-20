@@ -18,6 +18,8 @@ package java
 
 import (
 	"fmt"
+	"path"
+	"path/filepath"
 
 	"github.com/buildpack/libbuildpack/application"
 	"github.com/buildpack/libbuildpack/buildplan"
@@ -58,6 +60,7 @@ type RiffJavaInvoker struct {
 
 // Contribute makes the contribution to the launch layer
 func (r RiffJavaInvoker) Contribute() error {
+	fmt.Println("----- start Contribute() -------- ")
 	if err := r.invokerLayer.Contribute(func(artifact string, layer layers.DependencyLayer) error {
 		layer.Logger.SubsequentLine("Unzipping java invoker to %s", layer.Root)
 		return helper.ExtractZip(artifact, layer.Root, 0)
@@ -65,18 +68,27 @@ func (r RiffJavaInvoker) Contribute() error {
 		return err
 	}
 
+	functionUri := ""
+
 	if err := r.functionLayer.Contribute(marker{"Java", r.handler}, func(layer layers.Layer) error {
 		if len(r.handler) > 0 {
-			return layer.OverrideLaunchEnv("FUNCTION_URI", fmt.Sprintf("file://%s?handler=%s", r.application.Root, r.handler))
+			functionUri = fmt.Sprintf("file://%s?handler=%s", r.application.Root, r.handler)
+			return layer.OverrideLaunchEnv("FUNCTION_URI", functionUri)
 		} else {
-			return layer.OverrideLaunchEnv("FUNCTION_URI", fmt.Sprintf("file://%s", r.application.Root))
+			functionUri = getFunctionJarPath(r.application.Root)
+			return layer.OverrideLaunchEnv("FUNCTION_URI", functionUri)
 		}
 	}, layers.Launch); err != nil {
 		return err
 	}
 
-	command := fmt.Sprintf("java -cp %s $JAVA_OPTS %s", r.invokerLayer.Root, invokerMainClass)
+	fmt.Println("**********************************")
+	fmt.Println(fmt.Sprintf("FUNCTION_URI: %s", functionUri))
+	fmt.Println("**********************************")
 
+	command := fmt.Sprintf("java -cp %s $JAVA_OPTS %s", r.invokerLayer.Root, invokerMainClass)
+	fmt.Println(command)
+	fmt.Println("----- end Contribute() --------")
 	return r.layers.WriteApplicationMetadata(layers.Metadata{
 		Processes: layers.Processes{
 			layers.Process{Type: "function", Command: command},
@@ -85,14 +97,29 @@ func (r RiffJavaInvoker) Contribute() error {
 	})
 }
 
+func getFunctionJarPath(applicationRoot string) string {
+	functionPath := path.Join(applicationRoot, "target")
+	matches, _ := filepath.Glob(fmt.Sprintf("%s/*.jar", functionPath))
+	for _, match := range matches {
+		return match
+	}
+	return functionPath
+}
+
 func (r RiffJavaInvoker) command(destination string) string {
+	fmt.Println("----- start command() -------- ")
+	command := ""
 	if len(r.handler) > 0 {
-		return fmt.Sprintf("java -jar %s $JAVA_OPTS --function.uri='file://%s?handler=%s'",
+		command = fmt.Sprintf("java -jar %s $JAVA_OPTS --function.uri='file://%s?handler=%s'",
 			destination, r.application.Root, r.handler)
 	} else {
-		return fmt.Sprintf("java -jar %s $JAVA_OPTS --function.uri='file://%s'",
+		command = fmt.Sprintf("java -jar %s $JAVA_OPTS --function.uri='file://%s'",
 			destination, r.application.Root)
 	}
+	fmt.Println(command)
+	fmt.Println("----- end command() -------- ")
+
+	return command
 }
 
 // BuildPlanContribution returns the BuildPlan with requirements for the invoker

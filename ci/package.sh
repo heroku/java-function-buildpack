@@ -22,7 +22,7 @@ cd ${PACKAGE_DIR}
 
 ID=$(sed -n 's|id = \"\(.*\)\"|\1|p' buildpack.toml | head -n1)
 VERSION=$(sed -n 's|version = \"\(.*\)\"|\1|p' buildpack.toml | head -n1)
-TARGET="${ARTIFACTORY_DIR}/$(echo ${ID} | sed 's|\.|/|g')/${ID}/${VERSION}/${ID}-$(echo ${VERSION} | sed "s|SNAPSHOT|SNAPSHOT-${GIT_TIMESTAMP}-${GIT_SHA:0:16}|").tgz"
+TARGET="${ARTIFACTORY_DIR}/$(echo ${ID} | sed 's|\.|/|g')/${ID}/${VERSION}/${ID}-$(echo ${VERSION}).tgz"
 
 mkdir -p $(dirname ${TARGET})
 tar czf ${TARGET} *
