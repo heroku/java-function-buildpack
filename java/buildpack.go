@@ -19,12 +19,12 @@ package java
 
 import (
 	"fmt"
+	"github.com/heroku/libhkbuildpack/detect"
 
 	"github.com/buildpack/libbuildpack/buildplan"
 	"github.com/cloudfoundry/jvm-application-cnb/jvmapplication"
-	"github.com/cloudfoundry/libcfbuildpack/build"
-	"github.com/cloudfoundry/libcfbuildpack/detect"
-	"github.com/projectriff/libfnbuildpack/function"
+	"github.com/heroku/libfnbuildpack/function"
+	"github.com/heroku/libhkbuildpack/build"
 )
 
 type JavaBuildpack struct {
