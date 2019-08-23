@@ -18,15 +18,17 @@ package java
 
 import (
 	"fmt"
+	"path"
+	"path/filepath"
 
 	"github.com/buildpack/libbuildpack/application"
 	"github.com/buildpack/libbuildpack/buildplan"
-	"github.com/cloudfoundry/libcfbuildpack/build"
-	"github.com/cloudfoundry/libcfbuildpack/detect"
-	"github.com/cloudfoundry/libcfbuildpack/helper"
-	"github.com/cloudfoundry/libcfbuildpack/layers"
 	"github.com/cloudfoundry/openjdk-cnb/jre"
-	"github.com/projectriff/libfnbuildpack/function"
+	"github.com/heroku/libfnbuildpack/function"
+	"github.com/heroku/libhkbuildpack/build"
+	"github.com/heroku/libhkbuildpack/detect"
+	"github.com/heroku/libhkbuildpack/helper"
+	"github.com/heroku/libhkbuildpack/layers"
 )
 
 const (
@@ -67,16 +69,15 @@ func (r RiffJavaInvoker) Contribute() error {
 
 	if err := r.functionLayer.Contribute(marker{"Java", r.handler}, func(layer layers.Layer) error {
 		if len(r.handler) > 0 {
-			return layer.OverrideLaunchEnv("FUNCTION_URI", fmt.Sprintf("file://%s?handler=%s", r.application.Root, r.handler))
+            return layer.OverrideLaunchEnv("FUNCTION_URI", fmt.Sprintf("file://%s?handler=%s", r.application.Root, r.handler))
 		} else {
-			return layer.OverrideLaunchEnv("FUNCTION_URI", fmt.Sprintf("file://%s", r.application.Root))
+			return layer.OverrideLaunchEnv("FUNCTION_URI", getFunctionJarPath(r.application.Root))
 		}
 	}, layers.Launch); err != nil {
 		return err
 	}
 
 	command := fmt.Sprintf("java -cp %s $JAVA_OPTS %s", r.invokerLayer.Root, invokerMainClass)
-
 	return r.layers.WriteApplicationMetadata(layers.Metadata{
 		Processes: layers.Processes{
 			layers.Process{Type: "function", Command: command},
@@ -85,14 +86,26 @@ func (r RiffJavaInvoker) Contribute() error {
 	})
 }
 
+func getFunctionJarPath(applicationRoot string) string {
+	functionPath := path.Join(applicationRoot, "target")
+	matches, _ := filepath.Glob(fmt.Sprintf("%s/*.jar", functionPath))
+	for _, match := range matches {
+		return match
+	}
+	return functionPath
+}
+
 func (r RiffJavaInvoker) command(destination string) string {
+	command := ""
 	if len(r.handler) > 0 {
-		return fmt.Sprintf("java -jar %s $JAVA_OPTS --function.uri='file://%s?handler=%s'",
+		command = fmt.Sprintf("java -jar %s $JAVA_OPTS --function.uri='file://%s?handler=%s'",
 			destination, r.application.Root, r.handler)
 	} else {
-		return fmt.Sprintf("java -jar %s $JAVA_OPTS --function.uri='file://%s'",
+		command = fmt.Sprintf("java -jar %s $JAVA_OPTS --function.uri='file://%s'",
 			destination, r.application.Root)
 	}
+
+	return command
 }
 
 // BuildPlanContribution returns the BuildPlan with requirements for the invoker

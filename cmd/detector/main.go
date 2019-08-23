@@ -17,8 +17,8 @@
 package main
 
 import (
-	"github.com/projectriff/java-function-buildpack/java"
-	"github.com/projectriff/libfnbuildpack/function"
+	"github.com/heroku/java-function-buildpack/java"
+	"github.com/heroku/libfnbuildpack/function"
 )
 
 func main() {

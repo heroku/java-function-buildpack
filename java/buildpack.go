@@ -19,12 +19,10 @@ package java
 
 import (
 	"fmt"
-
 	"github.com/buildpack/libbuildpack/buildplan"
-	"github.com/cloudfoundry/jvm-application-cnb/jvmapplication"
-	"github.com/cloudfoundry/libcfbuildpack/build"
-	"github.com/cloudfoundry/libcfbuildpack/detect"
-	"github.com/projectriff/libfnbuildpack/function"
+	"github.com/heroku/libfnbuildpack/function"
+	"github.com/heroku/libhkbuildpack/build"
+	"github.com/heroku/libhkbuildpack/detect"
 )
 
 type JavaBuildpack struct {
@@ -42,14 +40,12 @@ func (bp *JavaBuildpack) Detect(d detect.Detect, m function.Metadata) (*buildpla
 		plan := BuildPlanContribution(d, m)
 		return &plan, nil
 	}
-	// didn't detect
+
 	return nil, nil
 }
 
 func (*JavaBuildpack) detect(d detect.Detect, m function.Metadata) (bool, error) {
-	// Try java
-	_, ok := d.BuildPlan[jvmapplication.Dependency]
-	return ok, nil
+	return true, nil
 }
 
 func (*JavaBuildpack) Build(b build.Build) error {

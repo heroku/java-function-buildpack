@@ -21,11 +21,11 @@ import (
 
 	"github.com/buildpack/libbuildpack/buildplan"
 	"github.com/cloudfoundry/jvm-application-cnb/jvmapplication"
-	"github.com/cloudfoundry/libcfbuildpack/test"
 	"github.com/cloudfoundry/openjdk-cnb/jre"
+	"github.com/heroku/java-function-buildpack/java"
+	"github.com/heroku/libfnbuildpack/function"
+	"github.com/heroku/libhkbuildpack/test"
 	. "github.com/onsi/gomega"
-	"github.com/projectriff/java-function-buildpack/java"
-	"github.com/projectriff/libfnbuildpack/function"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
 )
