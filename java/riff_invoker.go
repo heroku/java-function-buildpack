@@ -60,7 +60,6 @@ type RiffJavaInvoker struct {
 
 // Contribute makes the contribution to the launch layer
 func (r RiffJavaInvoker) Contribute() error {
-	fmt.Println("----- start Contribute() -------- ")
 	if err := r.invokerLayer.Contribute(func(artifact string, layer layers.DependencyLayer) error {
 		layer.Logger.SubsequentLine("Unzipping java invoker to %s", layer.Root)
 		return helper.ExtractZip(artifact, layer.Root, 0)
@@ -68,27 +67,17 @@ func (r RiffJavaInvoker) Contribute() error {
 		return err
 	}
 
-	functionUri := ""
-
 	if err := r.functionLayer.Contribute(marker{"Java", r.handler}, func(layer layers.Layer) error {
 		if len(r.handler) > 0 {
-			functionUri = fmt.Sprintf("file://%s?handler=%s", r.application.Root, r.handler)
-			return layer.OverrideLaunchEnv("FUNCTION_URI", functionUri)
+            return layer.OverrideLaunchEnv("FUNCTION_URI", fmt.Sprintf("file://%s?handler=%s", r.application.Root, r.handler))
 		} else {
-			functionUri = getFunctionJarPath(r.application.Root)
-			return layer.OverrideLaunchEnv("FUNCTION_URI", functionUri)
+			return layer.OverrideLaunchEnv("FUNCTION_URI", getFunctionJarPath(r.application.Root))
 		}
 	}, layers.Launch); err != nil {
 		return err
 	}
 
-	fmt.Println("**********************************")
-	fmt.Println(fmt.Sprintf("FUNCTION_URI: %s", functionUri))
-	fmt.Println("**********************************")
-
 	command := fmt.Sprintf("java -cp %s $JAVA_OPTS %s", r.invokerLayer.Root, invokerMainClass)
-	fmt.Println(command)
-	fmt.Println("----- end Contribute() --------")
 	return r.layers.WriteApplicationMetadata(layers.Metadata{
 		Processes: layers.Processes{
 			layers.Process{Type: "function", Command: command},
@@ -107,7 +96,6 @@ func getFunctionJarPath(applicationRoot string) string {
 }
 
 func (r RiffJavaInvoker) command(destination string) string {
-	fmt.Println("----- start command() -------- ")
 	command := ""
 	if len(r.handler) > 0 {
 		command = fmt.Sprintf("java -jar %s $JAVA_OPTS --function.uri='file://%s?handler=%s'",
@@ -116,8 +104,6 @@ func (r RiffJavaInvoker) command(destination string) string {
 		command = fmt.Sprintf("java -jar %s $JAVA_OPTS --function.uri='file://%s'",
 			destination, r.application.Root)
 	}
-	fmt.Println(command)
-	fmt.Println("----- end command() -------- ")
 
 	return command
 }
