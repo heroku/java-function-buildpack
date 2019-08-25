@@ -20,8 +20,6 @@ import (
 	"testing"
 
 	"github.com/buildpack/libbuildpack/buildplan"
-	"github.com/cloudfoundry/jvm-application-cnb/jvmapplication"
-	"github.com/cloudfoundry/openjdk-cnb/jre"
 	"github.com/heroku/java-function-buildpack/java"
 	"github.com/heroku/libfnbuildpack/function"
 	"github.com/heroku/libhkbuildpack/test"
@@ -39,46 +37,6 @@ func TestName(t *testing.T) {
 			b := java.NewBuildpack()
 
 			g.Expect(b.Id()).To(Equal("java"))
-		})
-	}, spec.Report(report.Terminal{}))
-}
-
-func TestDetect(t *testing.T) {
-	spec.Run(t, "Detect", func(t *testing.T, _ spec.G, it spec.S) {
-
-		g := NewGomegaWithT(t)
-
-		var f *test.DetectFactory
-		var m function.Metadata
-		var b function.Buildpack
-
-		it.Before(func() {
-			f = test.NewDetectFactory(t)
-			m = function.Metadata{}
-			b = java.NewBuildpack()
-		})
-
-		it("fails by default", func() {
-			plan, err := b.Detect(f.Detect, m)
-
-			g.Expect(err).To(BeNil())
-			g.Expect(plan).To(BeNil())
-		})
-
-		it("passes if the JVM app BP applied", func() {
-			f.AddBuildPlan(jvmapplication.Dependency, buildplan.Dependency{})
-
-			plan, err := b.Detect(f.Detect, m)
-
-			g.Expect(err).To(BeNil())
-			g.Expect(plan).To(Equal(&buildplan.BuildPlan{
-				jre.Dependency: buildplan.Dependency{
-					Metadata: buildplan.Metadata{"launch": true},
-				},
-				java.Dependency: buildplan.Dependency{
-					Metadata: buildplan.Metadata{"handler": ""},
-				},
-			}))
 		})
 	}, spec.Report(report.Terminal{}))
 }

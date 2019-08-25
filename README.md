@@ -1,4 +1,5 @@
 # `java-function-buildpack`
+[![CircleCI](https://circleci.com/gh/heroku/java-function-buildpack.svg?style=svg)](https://circleci.com/gh/heroku/java-function-buildpack)
 
 The Java Function Buildpack is a Cloud Native Buildpack V3 that provides the riff [Java Function Invoker](https://github.com/projectriff/java-function-invoker) to functions.
 
