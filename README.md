@@ -3,26 +3,26 @@
 
 The Java Function Buildpack is a Cloud Native Buildpack V3 that provides the riff [Java Function Invoker](https://github.com/projectriff/java-function-invoker) to functions.
 
-This buildpack is designed to work in collaboration with other buildpacks, which are tailored to
-support (and know how to build / run) languages supported by riff.
+This buildpack is designed to work in collaboration with other Heroku buildpacks, which are tailored to
+support (and know how to build / run) languages supported by Heroku.
+
+**NOTE**: Java 11 is required for building your Java Function.  To specific Java 11, please add a `system.properties` file 
+with `java.runtime.version=11` in the body of the file.  Here's an [example](https://github.com/elbandito/java-func) of a Java Function project.
 
 ## In Plain English
 
-In a nutshell, when combined with the other buildpacks present in the [riff builder](https://github.com/projectriff/builder) what this means (and especially when dealing with the riff CLI which takes care of the creation of the `riff.toml` file for you):
-
-- The presence of a `pom.xml` or `build.gradle` file will result in the compilation and execution of a java function, thanks to the [java invoker](https://github.com/projectriff/java-function-invoker)
-  1. the `--handler` flag is optional in certain cases, as documented by the java invoker
+When combined with the other buildpacks present in the [Heroku functions builder](https://github.com/heroku/pack-images/blob/master/functions-builder.toml), 
+users can use the `pack create-builder` command to build a builder image to build a Java Function image via `pack build`.
+- The presence of a `pom.xml` file will result in the compilation and execution of a java function, thanks to the [java invoker](https://github.com/projectriff/java-function-invoker)
 - Ambiguity in the detection process will result in a build failure
-- The presence of the `--invoker` flag will entirely bypass the detection mechanism and force a given language/invoker
 
 ## Detailed Buildpack Behavior
 
 ### Detection Phase
 
-Detection passes if
+Detection passes if: 
 
-- a `$APPLICATION_ROOT/riff.toml` exists and
-- the build plan already contains a `jvm-application` key (typically because a JVM based application was detected by the [java buildpack](https://github.com/cloudfoundry/build-system-buildpack))
+TBD
 
 If detection passes, the buildpack will contribute an `openjdk-jre` key with `launch` metadata to instruct
 the `openjdk-buildpack` to provide a JRE. It will also add a `riff-invoker-java` key and `handler`
@@ -35,7 +35,9 @@ The `override` key in `riff.toml` can be used to bypass detection and force the 
 
 If a java build has been detected
 
-- Contributes the riff Java Invoker to a launch layer, set as the main java entry point with `function.uri = <build-directory>?handler=<handler>` set as an environment variable.
+- Contributes the riff Java Invoker to a launch layer, set as the main java entry point with `function.uri = <build-directory>?handler=<handler>` 
+set as an environment variable (`FUNCTION_URI`).  This value is automatically set to point to the .jar file located in `/workspace/target`.
+At the moment, it is assumed only 1 .jar exits in this directory.
 
 The function behavior is exposed _via_ standard buildpack [process types](https://github.com/buildpack/spec/blob/master/buildpack.md#launch):
 
@@ -47,6 +49,7 @@ The function behavior is exposed _via_ standard buildpack [process types](https:
 ### Prerequisites
 To build the java-function-buildpack you'll need
 
+- Java 11
 - Go 1.12+
 - to run acceptance tests:
   - a running local docker daemon
@@ -55,12 +58,11 @@ To build the java-function-buildpack you'll need
 You can build the buildpack by running
 
 ```bash
-make
+make build
 ```
 
-This will package (with pre-downloaded cache layers) the buildpack in the
-`artifactory/io/projectriff/java/io.projectriff.java/latest` directory. That can be used as a `uri` in a `builder.toml`
-file of a builder (see https://github.com/projectriff/builder)
+This will package (with pre-downloaded cache layers) the buildpack in the root directory. That can be used as a `uri` in a `functions-builder.toml`
+file of a builder (see https://github.com/heroku/pack-images)
 
 ## License
 
