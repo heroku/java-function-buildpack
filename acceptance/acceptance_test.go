@@ -21,7 +21,7 @@ package acceptance
 import (
 	"testing"
 
-	fntesting "github.com/projectriff/libfnbuildpack/testing"
+	fntesting "github.com/heroku/libfnbuildpack/testing"
 )
 
 func TestBuilder(t *testing.T) {
@@ -37,10 +37,6 @@ func TestBuilder(t *testing.T) {
 			{
 				Name:    "java",
 				SubPath: "functions/uppercase/java",
-			},
-			{
-				Name:    "java-boot",
-				SubPath: "functions/uppercase/java-boot",
 			},
 		},
 	}
