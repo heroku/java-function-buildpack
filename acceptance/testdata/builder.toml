@@ -1,18 +1,21 @@
-buildpacks = [
-  { id = "io.projectriff.java",          latest = true, uri = "../../artifactory/io/projectriff/java/io.projectriff.java/latest" },
-  { id = "org.cloudfoundry.openjdk",     latest = true, uri = "https://repo.spring.io/libs-milestone-local/org/cloudfoundry/openjdk/org.cloudfoundry.openjdk/1.0.0-M9/org.cloudfoundry.openjdk-1.0.0-M9.tgz" },
-  { id = "org.cloudfoundry.buildsystem", latest = true, uri = "https://repo.spring.io/libs-milestone-local/org/cloudfoundry/buildsystem/org.cloudfoundry.buildsystem/1.0.0-M9/org.cloudfoundry.buildsystem-1.0.0-M9.tgz" },
-]
+[stack]
+  id = "heroku-18"
+  build-image = "heroku/pack:18-build"
+  run-image = "heroku/pack:18"
+
+[[buildpacks]]
+  id = "heroku/java"
+  uri = "https://github.com/heroku/java-buildpack/releases/download/v0.13/java-buildpack-v0.13.tgz"
+  latest = true
+
+[[buildpacks]]
+  id = "heroku/java-function"
+  uri = "https://github.com/heroku/java-function-buildpack/releases/download/v0.2.0/java-function-buildpack-v0.2.0.tgz"
+  latest = true
 
 [[groups]]
   # java functions
   buildpacks = [
-    { id = "org.cloudfoundry.openjdk",     version = 'latest', optional = true },
-    { id = "org.cloudfoundry.buildsystem", version = 'latest', optional = true },
-    { id = "io.projectriff.java",          version = 'latest' },
+    { id = "heroku/java", version = 'latest'},
+    { id = "heroku/java-function", version = 'latest' },
   ]
-
-[stack]
-  id = "io.buildpacks.stacks.bionic"
-  build-image = "cnbs/build"
-  run-image = "cnbs/run"

@@ -12,8 +12,6 @@ test:
 
 acceptance:
 	pack create-builder -b acceptance/testdata/builder.toml projectriff/builder
-	docker pull cnbs/build
-	docker pull cnbs/run
 	GO111MODULE=on go test -v -tags=acceptance ./acceptance
 
 build:
