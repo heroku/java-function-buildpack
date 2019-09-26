@@ -20,9 +20,9 @@ package java
 import (
 	"fmt"
 	"github.com/buildpack/libbuildpack/buildplan"
+	"github.com/cloudfoundry/libcfbuildpack/build"
+	"github.com/cloudfoundry/libcfbuildpack/detect"
 	"github.com/heroku/libfnbuildpack/function"
-	"github.com/heroku/libhkbuildpack/build"
-	"github.com/heroku/libhkbuildpack/detect"
 )
 
 type JavaBuildpack struct {
@@ -33,7 +33,7 @@ func (bp *JavaBuildpack) Id() string {
 	return bp.id
 }
 
-func (bp *JavaBuildpack) Detect(d detect.Detect, m function.Metadata) (*buildplan.BuildPlan, error) {
+func (bp *JavaBuildpack) Detect(d detect.Detect, m function.Metadata) (*buildplan.Plan, error) {
 	if detected, err := bp.detect(d, m); err != nil {
 		return nil, err
 	} else if detected {

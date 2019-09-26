@@ -17,7 +17,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 GIT_TIMESTAMP=$(TZ=UTC git show --quiet --date='format-local:%Y%m%d%H%M%S' --format="%cd")
 GIT_SHA=$(git rev-parse HEAD)
 
-go build -ldflags='-s -w' -o bin/package github.com/heroku/libhkbuildpack/packager
+go build -ldflags='-s -w' -o bin/package github.com/cloudfoundry/libcfbuildpack/packager
 bin/package ${PACKAGE_DIR}
 
 cd ${PACKAGE_DIR}
