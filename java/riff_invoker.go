@@ -23,12 +23,11 @@ import (
 
 	"github.com/buildpack/libbuildpack/application"
 	"github.com/buildpack/libbuildpack/buildplan"
-	"github.com/cloudfoundry/openjdk-cnb/jre"
+	"github.com/cloudfoundry/libcfbuildpack/build"
+	"github.com/cloudfoundry/libcfbuildpack/detect"
+	"github.com/cloudfoundry/libcfbuildpack/helper"
+	"github.com/cloudfoundry/libcfbuildpack/layers"
 	"github.com/heroku/libfnbuildpack/function"
-	"github.com/heroku/libhkbuildpack/build"
-	"github.com/heroku/libhkbuildpack/detect"
-	"github.com/heroku/libhkbuildpack/helper"
-	"github.com/heroku/libhkbuildpack/layers"
 )
 
 const (
@@ -109,40 +108,39 @@ func (r RiffJavaInvoker) command(destination string) string {
 }
 
 // BuildPlanContribution returns the BuildPlan with requirements for the invoker
-func BuildPlanContribution(detect detect.Detect, metadata function.Metadata) buildplan.BuildPlan {
-	j := detect.BuildPlan[jre.Dependency]
-	if j.Metadata == nil {
-		j.Metadata = buildplan.Metadata{}
-	}
-	j.Metadata[jre.LaunchContribution] = true
+func BuildPlanContribution(detect detect.Detect, metadata function.Metadata) buildplan.Plan {
+	//j := detect.BuildPlan[jre.Dependency]
+	//if j.Metadata == nil {
+	//	j.Metadata = buildplan.Metadata{}
+	//}
+	//j.Metadata[jre.LaunchContribution] = true
+	//
+	//r := detect.BuildPlan[Dependency]
+	//if r.Metadata == nil {
+	//	r.Metadata = buildplan.Metadata{}
+	//}
+	//r.Metadata[Handler] = metadata.Handler
 
-	r := detect.BuildPlan[Dependency]
-	if r.Metadata == nil {
-		r.Metadata = buildplan.Metadata{}
-	}
-	r.Metadata[Handler] = metadata.Handler
-
-	return buildplan.BuildPlan{jre.Dependency: j, Dependency: r}
+	//return buildplan.BuildPlan{jre.Dependency: j, Dependency: r}
+	return buildplan.Plan{}
 }
 
 // NewJavaInvoker creates a new RiffJavaInvoker instance. OK is true if build plan contains "riff-invoker-java" dependency,
 // otherwise false.
 func NewJavaInvoker(build build.Build) (RiffJavaInvoker, bool, error) {
-	bp, ok := build.BuildPlan[Dependency]
-	if !ok {
-		return RiffJavaInvoker{}, false, nil
-	}
+	bp := build.Buildpack
 
 	deps, err := build.Buildpack.Dependencies()
 	if err != nil {
 		return RiffJavaInvoker{}, false, err
 	}
 
-	dep, err := deps.Best(Dependency, bp.Version, build.Stack)
+	dep, err := deps.Best(Dependency, "0.1.4", build.Stack)
 	if err != nil {
 		return RiffJavaInvoker{}, false, err
 	}
 
+	bp.Metadata[Handler] = ""
 	handler, ok := bp.Metadata[Handler].(string)
 	if !ok {
 		return RiffJavaInvoker{}, false, fmt.Errorf("handler metadata of incorrect type: %v", bp.Metadata[Handler])
