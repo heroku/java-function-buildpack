@@ -21,13 +21,16 @@ version = "0.3.0"
 [[stacks]]
 id = "heroku-18"
 
+[[stacks]]
+id = "io.buildpacks.stacks.bionic"
+
 [[metadata.dependencies]]
 id      = "riff-invoker-java"
 name    = "riff Java Invoker"
 version = "0.1.4"
 uri     = "https://repo.spring.io/libs-milestone-local/io/projectriff/java-function-invoker/0.1.4/java-function-invoker-0.1.4-exec.jar"
 sha256  = "afdb65875c6e160571057083d063b5d506d3f4dff235abeebaa75f447bf02b66"
-stacks  = ["heroku-18"]
+stacks  = ["heroku-18", "io.buildpacks.stacks.bionic"]
 
   [[metadata.dependencies.licenses]]
   type = "Apache-2.0"
